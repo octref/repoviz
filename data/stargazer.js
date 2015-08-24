@@ -1,5 +1,5 @@
-var req = require('./req.js');
-var parseLink = require('./parseLink.js');
+var req = require('../util/req.js');
+var parseLink = require('../util/parseLink.js');
 
 var fs = require('fs');
 
