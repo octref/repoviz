@@ -41,15 +41,11 @@ module.exports = function stargazer(repoURL, cb) {
 
         req(options, function(err, res, body) {
           addStars(body);
-          console.log('Done with page ' + page);
-          console.log('Total star length: ' + stars.length);
           done();
         });
       };
 
       async.eachLimit(pages, 3, iterator, function(err) {
-        console.log('All done');
-
         var sorted = _.sortBy(stars, function(star) {
           return star.time;
         });
