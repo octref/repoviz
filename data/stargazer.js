@@ -1,8 +1,6 @@
 var req = require('../util/req.js');
 var parseLink = require('../util/parseLink.js');
 
-var fs = require('fs');
-
 var qs = require('query-string'),
     _ = require('lodash'),
     async = require('async');
