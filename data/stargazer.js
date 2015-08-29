@@ -16,6 +16,10 @@ function addStars(body) {
   });
 }
 
+// Get a list of star subscriptions of this format:
+// [{ user: 'dragon3', time: '2015-08-27T15:47:52Z' },
+//  { user: 'mcmo'   , time: '2015-08-27T22:57:45Z' } ]
+// The list is ranked by time from oldest to newest
 module.exports = function stargazer(repoURL, cb) {
   var options = {
     url: '/repos/' + repoURL + '/stargazers',
