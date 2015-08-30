@@ -3,14 +3,12 @@
 
 var req = require('../util/req.js');
 
-var _ = require('lodash'),
-    async = require('async');
+var _ = require('lodash');
 
 module.exports = function(repoURL, cb) {
   var options = {
     url: '/repos/' + repoURL,
-    headers: { 'Accept': 'application/vnd.github.v3.star+json' },
-    qs: { 'per_page': 100 }
+    headers: { 'Accept': 'application/vnd.github.v3+json' }
   };
 
   req(options, function(err, res, body) {
