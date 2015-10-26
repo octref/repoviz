@@ -18,10 +18,13 @@ var _ = require('lodash'),
 
 var req = require('../util/req.js');
 
-var repo = 'masayuki0812/c3';
+var REPO = 'atom/atom';
+var FILE= 'atom.json';
+
+var ISSUE_TAKE_NUM = 15;
 
 var options = {
-  url: '/repos/' + repo + '/issues',
+  url: '/repos/' + REPO + '/issues',
   qs: {
     per_page: 100,
     state: "all"
@@ -29,29 +32,37 @@ var options = {
 };
 
 req(options, function(err, res, body) {
-  console.log(res.headers);
+  // Reject PRs and no-comment issues
+  var filteredIssues = _.reject(JSON.parse(body), function(issue) {
+    return issue.pull_request || issue.comments == 0;
+  });
 
-  var issuesAndPRs = _.map(JSON.parse(body), function(issue) {
+  // Only take a few most current issues to reflect activeness
+  var takenIssues = _.take(filteredIssues, ISSUE_TAKE_NUM);
+
+  // Simplify issue structure
+  var processedIssues = _.map(takenIssues, function(issue) {
     var result = _.pick(issue, ['id', 'number', 'title', 'comments', 'comments_url', 'created_at']);
     return _.assign(result, { login: issue.user.login });
   });
-  var issues = _.reject(issuesAndPRs, 'pull_request');
-  var issuesWithComments = _.reject(issues, function(issue) {
-    return issue.comments == 0;
-  });
-
+  
+  // Add a `timeToGetFirstComment` to each issue in `processedIssues`
   var addTimeToGetFirstComment = function(issue, done) {
     var path = url.parse(issue.comments_url).pathname;
     req({ url: path }, function(err, res, body) {
       var comments = JSON.parse(body);
       var issueCreated = moment(issue.created_at);
       var firstCommentCreated = moment(comments[0].created_at);
-      issue.timeToGetFirstComment = firstCommentCreated.diff(issueCreated, 'days');
+      issue.timeToGetFirstComment = {
+        days: firstCommentCreated.diff(issueCreated, 'days'),
+        hours: firstCommentCreated.diff(issueCreated, 'hours'),
+        minutes: firstCommentCreated.diff(issueCreated, 'minutes')
+      };
       done();
     });
   };
 
-  async.eachLimit(issuesWithComments, 3, addTimeToGetFirstComment, function(err) {
-    fs.writeFileSync('c3.json', JSON.stringify(issuesWithComments, null, 2), 'utf8');
+  async.eachLimit(processedIssues, 3, addTimeToGetFirstComment, function(err) {
+    fs.writeFileSync(FILE, JSON.stringify(processedIssues, null, 2), 'utf8');
   });
 });
