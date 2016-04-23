@@ -7,8 +7,7 @@ var _ = require('lodash');
 
 module.exports = function(repoURL, cb) {
   var options = {
-    url: '/repos/' + repoURL,
-    headers: { 'Accept': 'application/vnd.github.v3+json' }
+    url: '/repos/' + repoURL
   };
 
   req(options, function(err, res, body) {

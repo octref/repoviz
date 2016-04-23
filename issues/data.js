@@ -18,8 +18,8 @@ var _ = require('lodash'),
 
 var req = require('../util/req.js');
 
-var REPO = 'atom/atom';
-var FILE= 'atom.json';
+var REPO = 'rackt/redux';
+var FILE= 'redux.json';
 
 var ISSUE_TAKE_NUM = 15;
 
@@ -27,7 +27,7 @@ var options = {
   url: '/repos/' + REPO + '/issues',
   qs: {
     per_page: 100,
-    state: "all"
+    state: "open"
   }
 };
 
